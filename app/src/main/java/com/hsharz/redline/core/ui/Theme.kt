@@ -1,6 +1,5 @@
-package com.hsharz.redline.ui.theme
+package com.hsharz.redline.core.ui
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

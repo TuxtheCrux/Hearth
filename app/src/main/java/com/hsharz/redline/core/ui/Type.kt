@@ -1,4 +1,4 @@
-package com.hsharz.redline.ui.theme
+package com.hsharz.redline.core.ui
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
