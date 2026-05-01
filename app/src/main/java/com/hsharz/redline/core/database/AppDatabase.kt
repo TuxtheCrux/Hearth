@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hsharz.redline.feature.passwords.data.PasswordEntity
-import com.hsharz.redline.feature.cipher.data.AlgoEntity
+//import com.hsharz.redline.feature.cipher.data.AlgoEntity
 import com.hsharz.redline.feature.passwords.data.PasswordDao
-import com.hsharz.redline.feature.scanner.data.ScanEntity
+//import com.hsharz.redline.feature.scanner.data.ScanEntity
 
 /**
  * Room-Datenbank der Redline App.
@@ -16,15 +16,15 @@ import com.hsharz.redline.feature.scanner.data.ScanEntity
  * Singleton-Zugriff über `getDatabase(context)`.
  */
 @Database(
-    entities = [PasswordEntity::class, ScanEntity::class, AlgoEntity::class],
+    entities = [PasswordEntity::class/**, ScanEntity::class, AlgoEntity::class**/],
     version = 1, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
     // DAOs für den Zugriff auf die einzelnen Tabellen
     abstract fun passwordDao(): PasswordDao
-    abstract fun scanDao(): ScanDao
-    abstract fun algoDao(): AlgoDao
+    //abstract fun scanDao(): ScanDao
+    //abstract fun algoDao(): AlgoDao
 
     companion object {
         private const val DATABASE_NAME = "redline-db"

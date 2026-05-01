@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") //Kotlin Symbol Processor
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -64,5 +65,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.4")
     //hilt
     implementation("com.google.dagger:hilt-android:2.59.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
     ksp("com.google.dagger:hilt-compiler:2.59.2")
+    //Icons
+    implementation("androidx.compose.material:material-icons-extended")
 }

@@ -5,13 +5,14 @@ import com.hsharz.redline.feature.passwords.data.PasswordDao
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     @Provides
-    fun provideAppDatabase(context: Context): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return AppDatabase.getDatabase(context)
     }
 

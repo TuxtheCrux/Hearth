@@ -8,6 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.hsharz.redline.feature.passwords.ui.PasswordScreen
+import com.hsharz.redline.feature.passwords.ui.PasswordViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 @Composable
 fun NavigationGraph() {
@@ -35,13 +39,14 @@ fun NavigationGraph() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable<Routes.Passwords> {
-                PasswordsScreen()
+                val viewModel: PasswordViewModel = hiltViewModel()
+                PasswordScreen(viewModel = viewModel)
             }
             composable<Routes.Scanner> {
-                ScannerScreen()
+                //ScannerScreen()
             }
             composable<Routes.Cipher> {
-                CipherScreen()
+                //CipherScreen()
             }
         }
     }

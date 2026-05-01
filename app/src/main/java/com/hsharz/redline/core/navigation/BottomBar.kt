@@ -6,16 +6,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.NavigationBarItem
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 
-data class BottomBarData(val route: Routes, val icon: ImageVector?, val label: String) {
+
+data class BottomBarData(val route: Routes, val icon: ImageVector, val label: String) {
     companion object {
         val tabs = listOf(
-            BottomBarData(Routes.Passwords, null, "Passwords"),
-            BottomBarData(Routes.Scanner, null, "Scanner"),
-            BottomBarData(Routes.Cipher, null, "Cipher"),
+            BottomBarData(Routes.Passwords, Icons.Default.Lock, "Passwords"),
+            BottomBarData(Routes.Scanner, Icons.Default.Wifi, "Scanner"),
+            BottomBarData(Routes.Cipher, Icons.Default.Security, "Cipher"),
         )
     }
 }
