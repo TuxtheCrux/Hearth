@@ -8,7 +8,7 @@ data class PasswordEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val encryptedPassword: String,
     val email: String,
-    val websiteUrl: String,
+    val websiteOrApp: String,
     val app: String?,
     val passkey: Boolean,
     val lastModified: Long = System.currentTimeMillis()

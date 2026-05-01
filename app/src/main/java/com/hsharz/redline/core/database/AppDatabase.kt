@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.hsharz.redline.feature.passwords.data.PasswordEntity
 //import com.hsharz.redline.feature.cipher.data.AlgoEntity
 import com.hsharz.redline.feature.passwords.data.PasswordDao
+
 //import com.hsharz.redline.feature.scanner.data.ScanEntity
 
 /**
@@ -16,7 +17,9 @@ import com.hsharz.redline.feature.passwords.data.PasswordDao
  * Singleton-Zugriff über `getDatabase(context)`.
  */
 @Database(
-    entities = [PasswordEntity::class/**, ScanEntity::class, AlgoEntity::class**/],
+    entities = [PasswordEntity::class
+        /**, ScanEntity::class, AlgoEntity::class**/
+    ],
     version = 1, exportSchema = false
 )
 
@@ -25,7 +28,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun passwordDao(): PasswordDao
     //abstract fun scanDao(): ScanDao
     //abstract fun algoDao(): AlgoDao
-
     companion object {
         private const val DATABASE_NAME = "redline-db"
 
@@ -40,7 +42,9 @@ abstract class AppDatabase : RoomDatabase() {
                         INSTANCE = Room.databaseBuilder(
                             context, AppDatabase::class.java,
                             DATABASE_NAME
-                        ).build()
+                        )
+                            .fallbackToDestructiveMigration(true)
+                            .build()
                     }
                 }
             }

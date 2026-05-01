@@ -36,7 +36,7 @@ fun BottomBar(
             NavigationBarItem(
                 selected = currentDestination?.hasRoute(tab.route::class) == true,
                 onClick = { onTabSelected(tab.route) },
-                icon = { Icon(tab.icon!!, tab.label) },
+                icon = { Icon(tab.icon, tab.label) },
                 label = { Text(tab.label) }
             )
         }
