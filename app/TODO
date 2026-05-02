@@ -1,0 +1,53 @@
+# Redline – Projektstruktur
+
+```
+app/
+├── core/
+│   ├── security/        # Biometric Lock, Android Keystore, SQLCipher-Init
+│   ├── database/        # AppDatabase.kt, Basis-Setup für Room
+│   ├── navigation/      # NavGraph, Bottom Navigation Bar
+│   └── ui/              # Theme, Farben, Typography, gemeinsame Composables
+│
+└── feature/
+    ├── passwords/
+    │   ├── data/        # PasswordEntity.kt, PasswordDao.kt, PasswordRepository.kt
+    │   ├── domain/      # UseCase(s), Domain-Models
+    │   └── ui/          # PasswordScreen.kt, PasswordViewModel.kt
+    │
+    ├── scanner/
+    │   ├── data/        # ScanEntity.kt, ScanDao.kt, ScanRepository.kt
+    │   ├── domain/      # UseCase(s), ScanModel
+    │   └── ui/          # ScannerScreen.kt, ScannerViewModel.kt
+    │
+    └── cipher/
+        ├── data/        # AlgoEntity.kt (Erklärungen in Room), AlgoDao.kt
+        ├── domain/      # UseCase(s), stateless
+        └── ui/          # CipherScreen.kt, CipherViewModel.kt
+```
+
+---
+
+## Room – die drei Kernkonzepte
+
+| Klasse | Annotation | Datei | Aufgabe |
+|---|---|---|---|
+| Entity | `@Entity` | `PasswordEntity.kt` | Repräsentiert eine Tabellenzeile, Felder = Spalten |
+| DAO | `@Dao` | `PasswordDao.kt` | Interface mit insert, delete, getAll etc. |
+| Database | `@Database` | `AppDatabase.kt` (core/database/) | Verbindet alle Entities & DAOs, Singleton |
+
+> **SQLCipher** verschlüsselt die gesamte Room-Datenbank.
+> Der Schlüssel liegt sicher im **Android Keystore**.
+
+---
+
+## Tech-Stack
+
+| Komponente | Technologie |
+|---|---|
+| Sprache | Kotlin |
+| UI | Jetpack Compose + Material 3 |
+| Architektur | MVVM + Repository Pattern |
+| Datenbank | Room + SQLCipher |
+| Security | Android Keystore, BiometricPrompt |
+| DI | Hilt |
+| Async | Coroutines + Flow |
