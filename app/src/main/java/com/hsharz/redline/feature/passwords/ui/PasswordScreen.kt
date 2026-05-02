@@ -36,6 +36,8 @@ import com.hsharz.redline.feature.passwords.data.PasswordEntity
 
 //TODO Swipe to delete -> solve Deprecation warning
 // Consider writing own saver for selectedPassword
+// Swipe to delete is not aligned with password card
+// websiteOrApp ist not aligned within password card
 /**
  * Screen for displaying all passwords
  * @param viewModel
