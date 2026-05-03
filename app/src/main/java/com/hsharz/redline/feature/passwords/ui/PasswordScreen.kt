@@ -40,6 +40,7 @@ import java.util.Locale
 
 //TODO Swipe to delete -> solve Deprecation warning
 // Consider writing own saver for selectedPassword
+// Make search case unsensitive
 /**
  * Screen for displaying all passwords
  * @param viewModel
