@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CardDefaults
@@ -29,15 +30,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hsharz.redline.feature.passwords.data.PasswordEntity
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 //TODO Swipe to delete -> solve Deprecation warning
 // Consider writing own saver for selectedPassword
-// Swipe to delete is not aligned with password card
-// websiteOrApp ist not aligned within password card
 /**
  * Screen for displaying all passwords
  * @param viewModel
@@ -48,11 +50,11 @@ import com.hsharz.redline.feature.passwords.data.PasswordEntity
 @Composable
 fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) {
     val passwords by viewModel.passwords.collectAsStateWithLifecycle(initialValue = emptyList())
-
     //BottomSheet
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val addBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var selectedPassword by remember { mutableStateOf<PasswordEntity?>(null) }
 
     //Searchbar
@@ -60,6 +62,13 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
     var active by rememberSaveable { mutableStateOf(false) }
 
     var openAddPasswordSheet by rememberSaveable { mutableStateOf(false) }
+
+    val sortedPasswords = remember(passwords, query) {
+        passwords.filter { it.websiteOrApp.contains(query) }.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER)
+            { it.websiteOrApp })
+    }
+
 
     /**
      * Scaffold for the screen
@@ -85,7 +94,7 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                 content = {
                     LazyColumn(
                         content = {
-                            items(passwords) { password ->
+                            items(sortedPasswords, key = { it.id }) { password ->
                                 val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
                                     confirmValueChange = {
                                         if (it == SwipeToDismissBoxValue.EndToStart) {
@@ -116,6 +125,8 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                         }
                                         Box(
                                             modifier = Modifier.fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                                .clip(RoundedCornerShape(8.dp))
                                                 .background(color),
                                             contentAlignment = Alignment.CenterEnd
                                         ) {
@@ -145,15 +156,20 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
     )
     //Check if a bottom sheet is open
     if (openBottomSheet) {
+        val formattedTimestamp = SimpleDateFormat(
+            "dd-MM-yyyy HH:mm",
+            Locale.getDefault()
+        ).format(selectedPassword?.lastModified)
         PasswordDetailSheet(
             selectedPassword!!,
             bottomSheetState,
+            formattedTimestamp,
             onDismiss = { openBottomSheet = false })
     }
     if (openAddPasswordSheet) {
         PasswordAddPasswordSheet(
             viewModel = viewModel,
-            bottomSheetState = bottomSheetState,
+            bottomSheetState = addBottomSheetState,
             onDismiss = { openAddPasswordSheet = false }
         )
     }
@@ -173,13 +189,14 @@ fun PasswordCard(
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifier.fillMaxWidth(),
         onClick = {
             onCardClick(passwordEntity)
         },
         content = {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = passwordEntity.websiteOrApp,

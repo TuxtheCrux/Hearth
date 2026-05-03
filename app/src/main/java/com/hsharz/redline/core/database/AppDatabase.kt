@@ -5,9 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.hsharz.redline.feature.passwords.data.EntryType
 import com.hsharz.redline.feature.passwords.data.PasswordEntity
 import com.hsharz.redline.feature.passwords.data.PasswordDao
 import com.hsharz.redline.feature.passwords.data.WebOrAppTypeConverter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Room-Datenbank der Redline App.
@@ -34,6 +39,35 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        //TODO Testdaten löschen
+
+        // In AppDatabase, im Companion Object:
+        private fun createCallback(context: Context) = object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                // Wird nur beim allerersten Erstellen aufgerufen
+                CoroutineScope(Dispatchers.IO).launch {
+                    seedDatabase(getDatabase(context).passwordDao())
+                }
+            }
+        }
+
+        private suspend fun seedDatabase(dao: PasswordDao) {
+            val testData = (1..50).map { i ->
+                PasswordEntity(
+                    websiteOrApp = if (i % 2 == 0) "https://site$i.com" else "App $i",
+                    email = "user$i@test.de",
+                    encryptedPassword = "passwort$i",
+                    entryType = if (i % 2 == 0) EntryType.WEBSITE else EntryType.APP,
+                    passkey = false,
+                    lastModified = System.currentTimeMillis()
+                )
+            }
+            testData.forEach { dao.insertPassword(it) }
+        }
+
+        //End Tesdata
+
         /** Thread-sichere Singleton-Methode zum Holen der Datenbank-Instanz */
         fun getDatabase(context: Context): AppDatabase {
             if (INSTANCE == null) {
@@ -44,6 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
                             DATABASE_NAME
                         )
                             .fallbackToDestructiveMigration(true)
+                            .addCallback(createCallback(context))
                             .build()
                     }
                 }
@@ -52,3 +87,4 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+

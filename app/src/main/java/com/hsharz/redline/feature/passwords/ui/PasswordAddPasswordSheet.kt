@@ -40,7 +40,8 @@ fun PasswordAddPasswordSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
         ) {
             Button(
                 onClick = {

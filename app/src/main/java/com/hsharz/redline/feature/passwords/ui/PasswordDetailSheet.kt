@@ -13,7 +13,6 @@ import com.hsharz.redline.feature.passwords.data.PasswordEntity
 // 1. Add edit and delete buttons/function
 // 2. Add password strength indicator +
 // 3. hide password at first and add show password button in password detail sheet
-// 4. Add last changed date
 /**
  * Sheet for displaying details of a single password
  * @param selectedPassword
@@ -26,6 +25,7 @@ import com.hsharz.redline.feature.passwords.data.PasswordEntity
 fun PasswordDetailSheet(
     selectedPassword: PasswordEntity,
     bottomSheetState: SheetState,
+    formattedTimestamp: String,
     onDismiss: () -> Unit
 ) {
 
@@ -46,6 +46,14 @@ fun PasswordDetailSheet(
                 overlineContent = { Text(text = "Website or App") },
                 headlineContent = {
                     Text(text = selectedPassword.websiteOrApp)
+                }
+            )
+            ListItem(
+                overlineContent = { Text(text = "Last Changed") },
+                headlineContent = {
+                    Text(
+                        text = formattedTimestamp
+                    )
                 }
             )
         }
