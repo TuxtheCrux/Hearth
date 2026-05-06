@@ -25,6 +25,7 @@ class CryptoManager {
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
         val aesGCM = SecretKeySpec(secret.encoded, "AES")
+        masterKey.fill('\u0000')
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(
             Cipher.ENCRYPT_MODE,
@@ -48,6 +49,7 @@ class CryptoManager {
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
         val aesGCM = SecretKeySpec(secret.encoded, "AES")
+        masterKey.fill('\u0000')
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(
             Cipher.DECRYPT_MODE,

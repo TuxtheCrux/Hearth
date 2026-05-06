@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.hsharz.redline.core.security.KeyStoreManager
 import com.hsharz.redline.feature.passwords.data.EntryType
 import com.hsharz.redline.feature.passwords.data.PasswordEntity
 import com.hsharz.redline.feature.passwords.data.PasswordDao
@@ -13,6 +14,7 @@ import com.hsharz.redline.feature.passwords.data.WebOrAppTypeConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 /**
  * Room-Datenbank der Redline App.
@@ -41,7 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         //TODO Testdaten löschen
 
-        // In AppDatabase, im Companion Object:
+        /** In AppDatabase, im Companion Object:
         private fun createCallback(context: Context) = object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
@@ -67,18 +69,20 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         //End Tesdata
-
+        **/
         /** Thread-sichere Singleton-Methode zum Holen der Datenbank-Instanz */
-        fun getDatabase(context: Context): AppDatabase {
+        fun getDatabase(context: Context, keyStoreManager: KeyStoreManager): AppDatabase {
             if (INSTANCE == null) {
                 synchronized(this) {
                     if (INSTANCE == null) {
+                        val password = keyStoreManager.getOrCreateDatabasePassword()
+                        val factory = SupportOpenHelperFactory(password)
                         INSTANCE = Room.databaseBuilder(
                             context, AppDatabase::class.java,
                             DATABASE_NAME
                         )
+                            .openHelperFactory(factory)
                             .fallbackToDestructiveMigration(true)
-                            .addCallback(createCallback(context))
                             .build()
                     }
                 }

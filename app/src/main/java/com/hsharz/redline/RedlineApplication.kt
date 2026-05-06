@@ -5,5 +5,8 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class RedlineApplication : Application() {
-
+    override fun onCreate() {
+        super.onCreate()
+        System.loadLibrary("sqlcipher")
+    }
 }
