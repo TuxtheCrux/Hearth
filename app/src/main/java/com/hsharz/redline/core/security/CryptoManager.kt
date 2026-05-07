@@ -14,9 +14,10 @@ import java.security.SecureRandom
 
 //Base64-Kodierung für Schlüssel und Verschlüsselte Daten
 import android.util.Base64
+import javax.inject.Inject
 
 
-class CryptoManager {
+class CryptoManager @Inject constructor() {
 
     fun encrypt(plainText: String, masterKey: CharArray): String {
         val salt = ByteArray(32).also { SecureRandom().nextBytes(it) }

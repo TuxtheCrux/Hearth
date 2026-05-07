@@ -34,9 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hsharz.redline.feature.passwords.data.PasswordEntity
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.hsharz.redline.feature.passwords.domain.PasswordListItem
 
 //TODO Swipe to delete -> solve Deprecation warning
 // Consider writing own saver for selectedPassword
@@ -56,7 +54,9 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
     val bottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val addBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    var selectedPassword by remember { mutableStateOf<PasswordEntity?>(null) }
+
+
+    val detail by viewModel.passwordDetail.collectAsStateWithLifecycle()
 
     //Searchbar
     var query by rememberSaveable { mutableStateOf("") }
@@ -65,9 +65,9 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
     var openAddPasswordSheet by rememberSaveable { mutableStateOf(false) }
 
     val sortedPasswords = remember(passwords, query) {
-        passwords.filter { it.websiteOrApp.contains(query) }.sortedWith(
+        passwords.filter { it.webOrApp.contains(query) }.sortedWith(
             compareBy(String.CASE_INSENSITIVE_ORDER)
-            { it.websiteOrApp })
+            { it.webOrApp })
     }
 
 
@@ -99,7 +99,7 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                 val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
                                     confirmValueChange = {
                                         if (it == SwipeToDismissBoxValue.EndToStart) {
-                                            viewModel.deletePassword(password)
+                                            viewModel.deletePassword(password.id)
                                             true
                                         } else {
                                             false
@@ -144,7 +144,7 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                         password,
                                         modifier = Modifier
                                     ) { clickedPassword ->
-                                        selectedPassword = clickedPassword
+                                        viewModel.loadPasswordDetail(clickedPassword.id)
                                         openBottomSheet = true
                                     }
                                 }
@@ -156,21 +156,17 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
         }
     )
     //Check if a bottom sheet is open
-    if (openBottomSheet) {
-        val formattedTimestamp = SimpleDateFormat(
-            "dd-MM-yyyy HH:mm",
-            Locale.getDefault()
-        ).format(selectedPassword?.lastModified)
+    if (openBottomSheet && detail != null) {
         PasswordDetailSheet(
-            selectedPassword!!,
+            detail!!,
             bottomSheetState,
-            formattedTimestamp,
+            viewModel,
             onDismiss = { openBottomSheet = false })
     }
     if (openAddPasswordSheet) {
         PasswordAddPasswordSheet(
             viewModel = viewModel,
-            bottomSheetState = addBottomSheetState,
+            addBottomSheetState = addBottomSheetState,
             onDismiss = { openAddPasswordSheet = false }
         )
     }
@@ -184,15 +180,15 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
  */
 @Composable
 fun PasswordCard(
-    passwordEntity: PasswordEntity,
+    passwordListItem: PasswordListItem,
     modifier: Modifier = Modifier,
-    onCardClick: (PasswordEntity) -> Unit,
+    onCardClick: (PasswordListItem) -> Unit,
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = modifier.fillMaxWidth(),
         onClick = {
-            onCardClick(passwordEntity)
+            onCardClick(passwordListItem)
         },
         content = {
             Column(
@@ -200,7 +196,7 @@ fun PasswordCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = passwordEntity.websiteOrApp,
+                    text = passwordListItem.webOrApp,
                     style = typography.titleLarge
                 )
 

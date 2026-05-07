@@ -2,44 +2,43 @@ package com.hsharz.redline.feature.passwords.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsharz.redline.feature.passwords.data.EntryType
-import com.hsharz.redline.feature.passwords.data.PasswordEntity
-import com.hsharz.redline.feature.passwords.data.PasswordRepository
+import com.hsharz.redline.feature.passwords.domain.DeletePasswordUseCase
+import com.hsharz.redline.feature.passwords.domain.GetPasswordDetailUseCase
+import com.hsharz.redline.feature.passwords.domain.PasswordDetail
+import com.hsharz.redline.feature.passwords.domain.GetPasswordListUseCase
+import com.hsharz.redline.feature.passwords.domain.InsertPasswordUseCase
+import com.hsharz.redline.feature.passwords.domain.UpdatePasswordUseCase
+import com.hsharz.redline.feature.passwords.domain.UpdatedPasswordData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class PasswordViewModel @Inject constructor(private val repository: PasswordRepository) :
+class PasswordViewModel @Inject constructor(
+    private val getPasswordDetailUseCase: GetPasswordDetailUseCase,
+    private val getPasswordListUseCase: GetPasswordListUseCase,
+    private val insertPasswordUseCase: InsertPasswordUseCase,
+    private val updatePasswordUseCase: UpdatePasswordUseCase,
+    private val deletePasswordUseCase: DeletePasswordUseCase
+) :
     ViewModel() {
-    val passwords = repository.getAllPasswords()
-    fun insertPassword(password: PasswordEntity) = viewModelScope.launch {
-        repository.insertPassword(password)
+    val passwords = getPasswordListUseCase.invoke()
+    val passwordDetail = MutableStateFlow<PasswordDetail?>(null)
+    fun insertPassword(password: String, email: String, webOrApp: String) = viewModelScope.launch {
+        insertPasswordUseCase.createPassword(password, email, webOrApp)
     }
 
-    fun updatePassword(password: PasswordEntity) = viewModelScope.launch {
-        repository.updatePassword(password)
-    }
-
-    fun deletePassword(password: PasswordEntity) = viewModelScope.launch {
-        repository.deletePassword(password)
-    }
-
-    fun isUrl(url: String): Boolean {
-        return url.startsWith("http://") || url.startsWith("https://")
-                || url.startsWith("www.")
-    }
-
-    fun createPassword(password: String, websiteOrApp: String, email: String) {
-        val isWebsite: EntryType = if (isUrl(websiteOrApp)) {
-            EntryType.WEBSITE
-        } else {
-            EntryType.APP
+    fun updatePassword(updatedPasswordData: UpdatedPasswordData) =
+        viewModelScope.launch {
+            updatePasswordUseCase.updatePassword(updatedPasswordData)
         }
-        val passwordEntity = PasswordEntity(
-            encryptedPassword = password, websiteOrApp = websiteOrApp,
-            email = email, entryType = isWebsite, passkey = false
-        )
-        insertPassword(passwordEntity)
+
+    fun deletePassword(passwordId: Long) = viewModelScope.launch {
+        deletePasswordUseCase.deletePassword(passwordId)
+    }
+
+    fun loadPasswordDetail(id: Long) = viewModelScope.launch {
+        passwordDetail.value = getPasswordDetailUseCase.invoke(id)
     }
 }

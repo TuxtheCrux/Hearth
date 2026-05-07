@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 fun PasswordAddPasswordSheet(
     viewModel: PasswordViewModel,
     onDismiss: () -> Unit,
-    bottomSheetState: SheetState
+    addBottomSheetState: SheetState
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
@@ -35,7 +35,7 @@ fun PasswordAddPasswordSheet(
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
-        sheetState = bottomSheetState,
+        sheetState = addBottomSheetState,
     ) {
         Column(
             modifier = Modifier
@@ -48,7 +48,11 @@ fun PasswordAddPasswordSheet(
                     if (email.isNotBlank() && newPassword.isNotEmpty() &&
                         websiteOrApp.isNotEmpty()
                     ) {
-                        viewModel.createPassword(newPassword, websiteOrApp, email)
+                        viewModel.insertPassword(
+                            password = newPassword,
+                            email = email,
+                            webOrApp = websiteOrApp
+                        )
                         onDismiss()
                     } else {
                         emailError = email.isEmpty()

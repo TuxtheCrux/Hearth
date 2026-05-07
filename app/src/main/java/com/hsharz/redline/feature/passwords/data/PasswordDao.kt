@@ -15,9 +15,12 @@ interface PasswordDao {
     @Update
     suspend fun updatePassword(vararg password: PasswordEntity)
 
-    @Delete
-    suspend fun deletePassword(vararg password: PasswordEntity)
+    @Query("DELETE FROM PasswordEntity WHERE id = :id")
+    suspend fun deletePassword(id: Long)
 
-    @Query("SELECT * FROM passwordentity")
+    @Query("SELECT * FROM PasswordEntity")
     fun getAllPasswords(): Flow<List<PasswordEntity>>
+
+    @Query("SELECT * FROM PasswordEntity WHERE id = :id")
+    suspend fun getPasswordById(id: Long): PasswordEntity?
 }
