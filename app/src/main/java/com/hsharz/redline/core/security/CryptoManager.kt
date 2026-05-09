@@ -25,8 +25,8 @@ class CryptoManager @Inject constructor() {
         val kdf = PBEKeySpec(masterKey, salt, 400_000, 256)
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
+        kdf.clearPassword()
         val aesGCM = SecretKeySpec(secret.encoded, "AES")
-        masterKey.fill('\u0000')
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(
             Cipher.ENCRYPT_MODE,
@@ -49,8 +49,8 @@ class CryptoManager @Inject constructor() {
         val kdf = PBEKeySpec(masterKey, salt, 400_000, 256)
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
+        kdf.clearPassword()
         val aesGCM = SecretKeySpec(secret.encoded, "AES")
-        masterKey.fill('\u0000')
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(
             Cipher.DECRYPT_MODE,

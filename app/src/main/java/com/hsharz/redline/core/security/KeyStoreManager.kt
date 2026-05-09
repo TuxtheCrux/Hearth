@@ -9,7 +9,6 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Base64
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.SecureRandom

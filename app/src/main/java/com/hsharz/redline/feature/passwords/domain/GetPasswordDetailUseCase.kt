@@ -22,6 +22,7 @@ class GetPasswordDetailUseCase @Inject constructor(
             encryptedPasswordEntity.email,
             masterKey
         )
+        masterKey.fill('\u0000')
         return PasswordDetail(
             id,
             decryptedPassword,
