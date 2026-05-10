@@ -73,7 +73,6 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
 
     /**
      * Scaffold for the screen
-     * @author Tux_the_Crux
      */
     Scaffold(
         topBar = {
@@ -88,7 +87,6 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
         content = { innerPadding ->
             /**
              * LazyColumn for displaying all passwords
-             * @author Tux_the_Crux
              */
             Column(
                 modifier = modifier.fillMaxSize().padding(innerPadding),
@@ -108,7 +106,6 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                 )
                                 /**
                                  * Swipe to dismiss box for deleting passwords
-                                 * @author Tux_the_Crux
                                  */
                                 SwipeToDismissBox(
                                     modifier = Modifier.fillMaxWidth().padding(
@@ -174,8 +171,9 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
 
 /**
  * Card for each password
- * @param passwordEntity
+ * @param passwordListItem
  * @param onCardClick
+ * @param modifier
  * @author Tux_the_Crux
  */
 @Composable
