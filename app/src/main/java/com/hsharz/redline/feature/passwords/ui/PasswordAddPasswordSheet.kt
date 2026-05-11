@@ -45,7 +45,7 @@ fun PasswordAddPasswordSheet(
         ) {
             Button(
                 onClick = {
-                    if (email.isNotBlank() && newPassword.isNotEmpty() &&
+                    if (email.isNotEmpty() && newPassword.isNotEmpty() &&
                         websiteOrApp.isNotEmpty()
                     ) {
                         viewModel.insertPassword(

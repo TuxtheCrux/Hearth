@@ -35,7 +35,6 @@ class PasswordViewModel @Inject constructor(
 
     init {
         sessionExpired()
-
     }
 
     private fun sessionExpired() = sessionScope.launch {

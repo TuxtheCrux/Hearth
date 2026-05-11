@@ -4,8 +4,9 @@ import java.security.SecureRandom
 import android.util.Base64
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+import javax.inject.Inject
 
-class AuthCryption {
+class AuthCryption @Inject constructor() {
 
     fun generateHash(masterKey: CharArray): Pair<String, String> {
         val salt = ByteArray(32).also { SecureRandom().nextBytes(it) }
