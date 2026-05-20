@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    implementation("net.zetetic:sqlcipher-android:4.15.0@aar")
+    implementation("net.zetetic:sqlcipher-android:4.16.0@aar")
     implementation("androidx.sqlite:sqlite:2.6.2")
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

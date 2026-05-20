@@ -3,6 +3,8 @@ package com.hsharz.redline.feature.passwords.domain
 import com.hsharz.redline.core.security.CryptoManager
 import com.hsharz.redline.core.security.SessionManager
 import com.hsharz.redline.feature.passwords.data.PasswordRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetPasswordDetailUseCase @Inject constructor(
@@ -14,22 +16,28 @@ class GetPasswordDetailUseCase @Inject constructor(
         val encryptedPasswordEntity = passwordRepository.getPasswordById(id)
             ?: throw IllegalStateException("Password darf nicht null sein")
         val masterKey = sessionManager.getMasterKeyCopy()
-        val decryptedPassword = cryptoManager.decrypt(
-            encryptedPasswordEntity.encryptedPassword,
-            masterKey
-        )
-        val decryptedEmail = cryptoManager.decrypt(
-            encryptedPasswordEntity.email,
-            masterKey
-        )
-        masterKey.fill('\u0000')
-        return PasswordDetail(
-            id,
-            decryptedPassword,
-            decryptedEmail,
-            encryptedPasswordEntity.websiteOrApp,
-            encryptedPasswordEntity.lastModified
-        )
+        try {
+            val decryptedPassword = withContext(Dispatchers.Default) {
+                cryptoManager.decrypt(
+                    encryptedPasswordEntity.encryptedPassword,
+                    masterKey
+                )
+            }
+            val decryptedEmail = withContext(Dispatchers.Default) {
+                cryptoManager.decrypt(
+                    encryptedPasswordEntity.email,
+                    masterKey
+                )
+            }
+            return PasswordDetail(
+                id,
+                decryptedPassword,
+                decryptedEmail,
+                encryptedPasswordEntity.websiteOrApp,
+                encryptedPasswordEntity.lastModified
+            )
+        } finally {
+            masterKey.fill('\u0000')
+        }
     }
-
 }

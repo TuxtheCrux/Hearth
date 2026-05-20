@@ -3,7 +3,9 @@ package com.hsharz.redline.feature.passwords.data
 import com.hsharz.redline.core.security.CryptoManager
 import com.hsharz.redline.core.security.SessionManager
 import com.hsharz.redline.feature.passwords.domain.UpdatedPasswordData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PasswordRepository @Inject constructor(
@@ -13,31 +15,45 @@ class PasswordRepository @Inject constructor(
 ) {
     suspend fun insertPassword(password: PasswordEntity) {
         val masterKey = sessionManager.getMasterKeyCopy()
-        val encryptedPassword = cryptoManager.encrypt(password.encryptedPassword, masterKey)
-        val encryptedEmail = cryptoManager.encrypt(password.email, masterKey)
-        masterKey.fill('\u0000')
-        dao.insertPassword(
-            password.copy(
-                encryptedPassword = encryptedPassword,
-                email = encryptedEmail
+        try {
+            val encryptedPassword = withContext(Dispatchers.Default) {
+                cryptoManager.encrypt(password.encryptedPassword, masterKey)
+            }
+            val encryptedEmail = withContext(Dispatchers.Default) {
+                cryptoManager.encrypt(password.email, masterKey)
+            }
+            dao.insertPassword(
+                password.copy(
+                    encryptedPassword = encryptedPassword,
+                    email = encryptedEmail
+                )
             )
-        )
+        } finally {
+            masterKey.fill('\u0000')
+        }
     }
 
     suspend fun updatePassword(updatedPasswordData: UpdatedPasswordData) {
         val masterKey = sessionManager.getMasterKeyCopy()
-        val encryptedPassword = cryptoManager.encrypt(updatedPasswordData.newPassword, masterKey)
-        val encryptedEmail = cryptoManager.encrypt(updatedPasswordData.newEmail, masterKey)
-        val passwordToUpdate = dao.getPasswordById(updatedPasswordData.id)
-        masterKey.fill('\u0000')
-        dao.updatePassword(
-            passwordToUpdate!!.copy(
-                encryptedPassword = encryptedPassword,
-                email = encryptedEmail,
-                websiteOrApp = updatedPasswordData.newWebOrApp,
-                lastModified = System.currentTimeMillis()
+        try {
+            val encryptedPassword = withContext(Dispatchers.Default) {
+                cryptoManager.encrypt(updatedPasswordData.newPassword, masterKey)
+            }
+            val encryptedEmail = withContext(Dispatchers.Default) {
+                cryptoManager.encrypt(updatedPasswordData.newEmail, masterKey)
+            }
+            val passwordToUpdate = dao.getPasswordById(updatedPasswordData.id)
+            dao.updatePassword(
+                passwordToUpdate!!.copy(
+                    encryptedPassword = encryptedPassword,
+                    email = encryptedEmail,
+                    websiteOrApp = updatedPasswordData.newWebOrApp,
+                    lastModified = System.currentTimeMillis()
+                )
             )
-        )
+        } finally {
+            masterKey.fill('\u0000')
+        }
     }
 
     suspend fun deletePassword(passwordId: Long) = dao.deletePassword(passwordId)

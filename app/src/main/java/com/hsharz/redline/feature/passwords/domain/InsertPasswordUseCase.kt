@@ -13,7 +13,7 @@ class InsertPasswordUseCase @Inject constructor(
                 || url.startsWith("www.")
     }
 
-    suspend fun createPassword(password: String, websiteOrApp: String, email: String) {
+    suspend fun createPassword(password: String, email: String, websiteOrApp: String) {
         val isWebsite: EntryType = if (isUrl(websiteOrApp)) {
             EntryType.WEBSITE
         } else {

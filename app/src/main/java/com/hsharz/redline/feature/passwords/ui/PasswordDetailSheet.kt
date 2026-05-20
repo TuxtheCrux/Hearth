@@ -2,8 +2,13 @@ package com.hsharz.redline.feature.passwords.ui
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -49,6 +54,10 @@ fun PasswordDetailSheet(
             selectedPassword.lastModified
         )
     }
+    var hidePasswordState = rememberSaveable { mutableStateOf(true) }
+    val displayPassword =
+        if (hidePasswordState.value) "•".repeat(selectedPassword.password.length)
+        else selectedPassword.password
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = bottomSheetState
@@ -69,7 +78,20 @@ fun PasswordDetailSheet(
             )
             ListItem(
                 overlineContent = { Text(text = "Password") },
-                headlineContent = { Text(text = selectedPassword.password) }
+                headlineContent = { Text(text = displayPassword) },
+                trailingContent = {
+                    IconButton(
+                        onClick = { hidePasswordState.value = !hidePasswordState.value },
+                        content = {
+                            Icon(
+                                imageVector =
+                                    if (hidePasswordState.value) Icons.Default.Visibility
+                                    else Icons.Default.VisibilityOff,
+                                contentDescription = "Hide or show password"
+                            )
+                        }
+                    )
+                }
             )
             ListItem(
                 overlineContent = { Text(text = "Website or App") },

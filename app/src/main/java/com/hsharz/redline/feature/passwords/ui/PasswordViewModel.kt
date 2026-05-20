@@ -48,7 +48,7 @@ class PasswordViewModel @Inject constructor(
     }
 
     fun insertPassword(password: String, email: String, webOrApp: String) = viewModelScope.launch {
-        insertPasswordUseCase.createPassword(password, email, webOrApp)
+        insertPasswordUseCase.createPassword(password, email = email, websiteOrApp = webOrApp)
     }
 
     fun updatePassword(updatedPasswordData: UpdatedPasswordData) =

@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var sessionManager: SessionManager
+    @Inject
+    lateinit var sessionManager: SessionManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,6 +22,18 @@ class MainActivity : ComponentActivity() {
             RedlineTheme {
                 NavigationGraph(sessionManager)
             }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sessionManager.resetTimer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!sessionManager.isSessionLocked()) {
+            sessionManager.stopTimer()
         }
     }
 }
