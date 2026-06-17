@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsharz.redline.auth.domain.AuthState
 import com.hsharz.redline.auth.domain.CreateHashUseCase
+import com.hsharz.redline.auth.domain.ResetAppUseCase
 import com.hsharz.redline.auth.domain.VerifyCredentialsUseCase
 import com.hsharz.redline.core.security.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val verifyCredentialsUseCase: VerifyCredentialsUseCase,
     private val createHashUseCase: CreateHashUseCase,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val resetAppUseCase: ResetAppUseCase
 ) : ViewModel() {
     private var countLoginAttempts = 0
     private val _loginState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -50,4 +52,8 @@ class AuthViewModel @Inject constructor(
             }
 
         }
+
+    fun resetApp() = viewModelScope.launch(Dispatchers.IO) {
+        resetAppUseCase.invoke()
+    }
 }

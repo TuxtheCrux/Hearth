@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class SessionManager @Inject constructor() {
     private lateinit var masterKey: CharArray
     private val handler = Handler(Looper.getMainLooper())
-    private val TIMEOUT_MS: Long = 600_000_000_000_000_000
+    private val TIMEOUT_MS: Long = 60_000
 
     //Graceful session termination
     private val _sessionExpired = MutableSharedFlow<Unit>(extraBufferCapacity = 1)

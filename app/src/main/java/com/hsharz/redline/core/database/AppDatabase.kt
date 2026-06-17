@@ -1,6 +1,7 @@
 package com.hsharz.redline.core.database
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -41,37 +42,15 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        //TODO Testdaten löschen
-
-        /** In AppDatabase, im Companion Object:
-        private fun createCallback(context: Context) = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                // Wird nur beim allerersten Erstellen aufgerufen
-                CoroutineScope(Dispatchers.IO).launch {
-                    seedDatabase(getDatabase(context).passwordDao())
-                }
-            }
-        }
-
-        private suspend fun seedDatabase(dao: PasswordDao) {
-            val testData = (1..50).map { i ->
-                PasswordEntity(
-                    websiteOrApp = if (i % 2 == 0) "https://site$i.com" else "App $i",
-                    email = "user$i@test.de",
-                    encryptedPassword = "passwort$i",
-                    entryType = if (i % 2 == 0) EntryType.WEBSITE else EntryType.APP,
-                    passkey = false,
-                    lastModified = System.currentTimeMillis()
-                )
-            }
-            testData.forEach { dao.insertPassword(it) }
-        }
-
-        //End Tesdata
-        **/
         /** Thread-sichere Singleton-Methode zum Holen der Datenbank-Instanz */
         fun getDatabase(context: Context, keyStoreManager: KeyStoreManager): AppDatabase {
+            // Pending Reset prüfen
+            val systemPrefs = context.getSharedPreferences("RedlineSystem", Context.MODE_PRIVATE)
+            if (systemPrefs.getBoolean("pending_reset", false)) {
+                context.deleteDatabase(DATABASE_NAME)
+                systemPrefs.edit { putBoolean("pending_reset", false) }
+            }
+
             if (INSTANCE == null) {
                 synchronized(this) {
                     if (INSTANCE == null) {
@@ -88,6 +67,10 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
             return INSTANCE!!
+        }
+
+        fun resetInstance() {
+            INSTANCE = null
         }
     }
 }

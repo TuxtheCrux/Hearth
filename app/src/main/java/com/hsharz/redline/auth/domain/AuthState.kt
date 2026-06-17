@@ -1,7 +1,5 @@
 package com.hsharz.redline.auth.domain
 
-import androidx.lifecycle.Lifecycle
-
 sealed interface AuthState {
     data object Idle : AuthState
     data object LoginSuccess : AuthState

@@ -17,10 +17,9 @@ import com.hsharz.redline.feature.passwords.domain.UpdatedPasswordData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditSheet(
+fun PasswordEditSheet(
     selectedPassword: PasswordDetail,
-    editSheetState: SheetState,
-    viewModel: PasswordViewModel,
+    onSave: (id: Long, newPassword: String, newEmail: String, newWebOrApp: String) -> Unit,
     onDismiss: () -> Unit
 ) {
     var newPassword by rememberSaveable { mutableStateOf(selectedPassword.password) }
@@ -30,9 +29,9 @@ fun EditSheet(
     var emailError by rememberSaveable { mutableStateOf(false) }
     var passwordError by rememberSaveable { mutableStateOf(false) }
     var webOrAppError by rememberSaveable { mutableStateOf(false) }
+
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
-        sheetState = editSheetState
     ) {
         Column {
             Button(
@@ -41,14 +40,11 @@ fun EditSheet(
                         newEmail.isNotBlank() &&
                         newWebOrApp.isNotBlank()
                     ) {
-                        val updatedPasswordData = UpdatedPasswordData(
-                            id = selectedPassword.id,
-                            newPassword = newPassword,
-                            newEmail = newEmail,
-                            newWebOrApp = newWebOrApp
-                        )
-                        viewModel.updatePassword(
-                            updatedPasswordData
+                        onSave(
+                            selectedPassword.id,
+                            newPassword,
+                            newEmail,
+                            newWebOrApp
                         )
                         onDismiss()
                     } else {

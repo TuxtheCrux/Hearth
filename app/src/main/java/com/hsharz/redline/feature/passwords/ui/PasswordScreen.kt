@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsharz.redline.core.ui.causticShimmer
 import com.hsharz.redline.feature.passwords.domain.PasswordListItem
 
 //TODO Swipe to delete -> solve Deprecation warning
@@ -50,7 +51,7 @@ import com.hsharz.redline.feature.passwords.domain.PasswordListItem
 fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) {
     val passwords by viewModel.passwords.collectAsStateWithLifecycle(initialValue = emptyList())
     //BottomSheet
-    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var openDetailSheet by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val addBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -69,6 +70,9 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
             compareBy(String.CASE_INSENSITIVE_ORDER)
             { it.webOrApp })
     }
+
+    var openEditSheetState by remember { mutableStateOf(false) }
+    var editId by remember { mutableStateOf<Long?>(null) }
 
 
     /**
@@ -89,7 +93,9 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
              * LazyColumn for displaying all passwords
              */
             Column(
-                modifier = modifier.fillMaxSize().padding(innerPadding),
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 content = {
                     LazyColumn(
                         content = {
@@ -108,10 +114,12 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                  * Swipe to dismiss box for deleting passwords
                                  */
                                 SwipeToDismissBox(
-                                    modifier = Modifier.fillMaxWidth().padding(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            horizontal = 16.dp,
+                                            vertical = 8.dp
+                                        ),
                                     state = swipeToDismissBoxState,
                                     backgroundContent = {
                                         val color = if (swipeToDismissBoxState.dismissDirection
@@ -122,18 +130,23 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                             Color.Transparent
                                         }
                                         Box(
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier
+                                                .fillMaxWidth()
                                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                                 .clip(RoundedCornerShape(8.dp))
                                                 .background(color),
                                             contentAlignment = Alignment.CenterEnd
                                         ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = "Delete",
-                                                modifier = Modifier.padding(12.dp),
-                                                tint = Color.White
-                                            )
+                                            if (swipeToDismissBoxState.dismissDirection
+                                                == SwipeToDismissBoxValue.EndToStart
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = "Delete",
+                                                    modifier = Modifier.padding(12.dp),
+                                                    tint = Color.White
+                                                )
+                                            }
                                         }
                                     }
                                 ) {
@@ -141,8 +154,8 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
                                         password,
                                         modifier = Modifier
                                     ) { clickedPassword ->
-                                        viewModel.loadPasswordDetail(clickedPassword.id)
-                                        openBottomSheet = true
+                                        viewModel.getPasswordDetail(clickedPassword.id)
+                                        openDetailSheet = true
                                     }
                                 }
                             }
@@ -153,12 +166,30 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
         }
     )
     //Check if a bottom sheet is open
-    if (openBottomSheet && detail != null) {
+    if (openDetailSheet && detail != null) {
         PasswordDetailSheet(
             detail!!,
             bottomSheetState,
             viewModel,
-            onDismiss = { openBottomSheet = false })
+            onDismiss = { openDetailSheet = false },
+            onEditClick = {
+                openDetailSheet = false
+                editId = it
+                openEditSheetState = true
+
+            }
+        )
+    }
+    if (openEditSheetState && editId != null && detail != null) {
+        PasswordEditSheet(
+            selectedPassword = detail!!,
+            onSave = { passwordId, newPassword, newEmail, newWebOrApp ->
+                viewModel.saveAndReload(passwordId, newPassword, newEmail, newWebOrApp)
+                openEditSheetState = false
+                openDetailSheet = true
+            },
+            onDismiss = { openEditSheetState = false }
+        )
     }
     if (openAddPasswordSheet) {
         PasswordAddPasswordSheet(
@@ -184,7 +215,7 @@ fun PasswordCard(
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).causticShimmer(),
         onClick = {
             onCardClick(passwordListItem)
         },

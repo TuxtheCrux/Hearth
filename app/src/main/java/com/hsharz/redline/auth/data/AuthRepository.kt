@@ -21,4 +21,10 @@ class AuthRepository @Inject constructor(@ApplicationContext private val context
         val credentialSalt = redlinePrefs.getString(username + "_salt", null) ?: return null
         return Pair(credentialSalt, hashedCredential)
     }
+
+    fun clearPreferences() {
+        redlinePrefs.edit {
+            clear()
+        }
+    }
 }

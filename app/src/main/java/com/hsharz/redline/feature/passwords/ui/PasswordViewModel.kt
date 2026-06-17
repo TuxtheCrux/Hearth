@@ -55,20 +55,32 @@ class PasswordViewModel @Inject constructor(
         insertPasswordUseCase.createPassword(password, email = email, websiteOrApp = webOrApp)
     }
 
-    fun updatePassword(updatedPasswordData: UpdatedPasswordData) =
-        viewModelScope.launch {
-            updatePasswordUseCase.updatePassword(updatedPasswordData)
-        }
-
     fun deletePassword(passwordId: Long) = viewModelScope.launch {
         deletePasswordUseCase.deletePassword(passwordId = passwordId)
     }
 
-    fun loadPasswordDetail(id: Long) = viewModelScope.launch {
+    fun getPasswordDetail(id: Long) = viewModelScope.launch {
+        loadPasswordDetail(id)
+    }
+
+    private suspend fun loadPasswordDetail(id: Long) {
         passwordDetail.value = getPasswordDetailUseCase.invoke(id = id)
     }
 
     fun checkPasswordStrength(password: String) {
         passwordStrength.value = passwordStrengthCalcUseCase.invoke(password = password)
     }
+
+    fun saveAndReload(id: Long, password: String, email: String, webOrApp: String) =
+        viewModelScope.launch {
+            updatePasswordUseCase.updatePassword(
+                UpdatedPasswordData(
+                    id = id,
+                    newPassword = password,
+                    newEmail = email,
+                    newWebOrApp = webOrApp
+                )
+            )
+            loadPasswordDetail(id)
+        }
 }

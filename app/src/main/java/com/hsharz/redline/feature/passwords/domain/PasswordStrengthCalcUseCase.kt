@@ -26,7 +26,7 @@ class PasswordStrengthCalcUseCase @Inject constructor() {
                 )
             )
         ) score++
-        if (score == 4) return PasswordStrengthType.STRONG
+        if (score >= 4) return PasswordStrengthType.STRONG
         return if (score == 3) PasswordStrengthType.OK
         else PasswordStrengthType.WEAK
     }

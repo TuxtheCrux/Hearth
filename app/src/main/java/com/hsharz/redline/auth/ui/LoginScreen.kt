@@ -1,6 +1,8 @@
 package com.hsharz.redline.auth.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -21,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsharz.redline.auth.domain.AuthState
 import com.hsharz.redline.core.navigation.Routes
+import com.hsharz.redline.core.ui.RedlineBgDeep
 
 @Composable
 fun LoginScreen(
@@ -33,6 +37,9 @@ fun LoginScreen(
 
     var emailError by rememberSaveable { mutableStateOf(false) }
     var passwordError by rememberSaveable { mutableStateOf(false) }
+
+    var showResetDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,8 +94,20 @@ fun LoginScreen(
                 emailError = true
                 passwordError = true
             }
-            //AuthState.TooManyAttempts -> //ResetPassword
+
+            AuthState.TooManyAttempts -> showResetDialog = true
             else -> Unit
+        }
+    }
+    if (showResetDialog) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(RedlineBgDeep.copy(alpha = 0.85f))
+        )
+        ResetDialog {
+            showResetDialog = false
+            authViewModel.resetApp()
         }
     }
 }

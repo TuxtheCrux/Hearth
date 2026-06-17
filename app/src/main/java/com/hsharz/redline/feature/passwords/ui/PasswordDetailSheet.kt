@@ -14,14 +14,12 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,7 +29,6 @@ import java.util.Locale
 
 //TODO
 // 1. Add edit and delete buttons/function
-// 2. Add password strength indicator
 /**
  * Sheet for displaying details of a single password
  * @param selectedPassword
@@ -45,10 +42,9 @@ fun PasswordDetailSheet(
     selectedPassword: PasswordDetail,
     bottomSheetState: SheetState,
     viewModel: PasswordViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onEditClick: (Long) -> Unit
 ) {
-    var openEditSheet by rememberSaveable { mutableStateOf(false) }
-    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val timeInHours = remember(selectedPassword) {
         DateUtils.getRelativeTimeSpanString(selectedPassword.lastModified)
             .toString()
@@ -77,7 +73,7 @@ fun PasswordDetailSheet(
             Button(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 onClick = {
-                    openEditSheet = true
+                    onEditClick(selectedPassword.id)
                 },
                 content = {
                     Text(text = "Edit")
@@ -128,13 +124,5 @@ fun PasswordDetailSheet(
                 }
             )
         }
-    }
-    if (openEditSheet) {
-        EditSheet(
-            selectedPassword = selectedPassword,
-            editSheetState = editSheetState,
-            viewModel = viewModel,
-            onDismiss = { openEditSheet = false }
-        )
     }
 }
