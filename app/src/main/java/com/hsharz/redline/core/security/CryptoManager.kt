@@ -12,7 +12,7 @@ import javax.crypto.SecretKeyFactory
 //Zufallsgenerator für Salt und Nonce (IV)
 import java.security.SecureRandom
 
-//Base64-Kodierung für Schlüssel und Verschlüsselte Daten
+//Base64-Kodierung für Schlüssel und verschlüsselte Daten
 import android.util.Base64
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ class CryptoManager @Inject constructor() {
     fun encrypt(plainText: String, masterKey: CharArray): String {
         val salt = ByteArray(32).also { SecureRandom().nextBytes(it) }
         val nonce = ByteArray(12).also { SecureRandom().nextBytes(it) }
-        val kdf = PBEKeySpec(masterKey, salt, 400_000, 256)
+        val kdf = PBEKeySpec(masterKey, salt, 600_000, 256)
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
         kdf.clearPassword()
@@ -46,7 +46,7 @@ class CryptoManager @Inject constructor() {
         val nonce = blob.copyOfRange(32, 44)
         val cipherText = blob.copyOfRange(44, blob.size)
 
-        val kdf = PBEKeySpec(masterKey, salt, 400_000, 256)
+        val kdf = PBEKeySpec(masterKey, salt, 600_000, 256)
         val encKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val secret = encKey.generateSecret(kdf)
         kdf.clearPassword()

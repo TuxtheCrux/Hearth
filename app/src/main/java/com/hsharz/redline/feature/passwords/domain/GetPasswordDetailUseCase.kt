@@ -17,17 +17,16 @@ class GetPasswordDetailUseCase @Inject constructor(
             ?: throw IllegalStateException("Password darf nicht null sein")
         val masterKey = sessionManager.getMasterKeyCopy()
         try {
-            val decryptedPassword = withContext(Dispatchers.Default) {
-                cryptoManager.decrypt(
+            val (decryptedPassword, decryptedEmail) = withContext(Dispatchers.Default) {
+                val password = cryptoManager.decrypt(
                     encryptedPasswordEntity.encryptedPassword,
                     masterKey
                 )
-            }
-            val decryptedEmail = withContext(Dispatchers.Default) {
-                cryptoManager.decrypt(
+                val email = cryptoManager.decrypt(
                     encryptedPasswordEntity.email,
                     masterKey
                 )
+                Pair(password, email)
             }
             return PasswordDetail(
                 id,

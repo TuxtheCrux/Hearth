@@ -16,11 +16,10 @@ class PasswordRepository @Inject constructor(
     suspend fun insertPassword(password: PasswordEntity) {
         val masterKey = sessionManager.getMasterKeyCopy()
         try {
-            val encryptedPassword = withContext(Dispatchers.Default) {
-                cryptoManager.encrypt(password.encryptedPassword, masterKey)
-            }
-            val encryptedEmail = withContext(Dispatchers.Default) {
-                cryptoManager.encrypt(password.email, masterKey)
+            val (encryptedPassword, encryptedEmail) = withContext(Dispatchers.Default) {
+                val plainPassword = cryptoManager.encrypt(password.encryptedPassword, masterKey)
+                val email = cryptoManager.encrypt(password.email, masterKey)
+                Pair(plainPassword, email)
             }
             dao.insertPassword(
                 password.copy(
@@ -36,11 +35,13 @@ class PasswordRepository @Inject constructor(
     suspend fun updatePassword(updatedPasswordData: UpdatedPasswordData) {
         val masterKey = sessionManager.getMasterKeyCopy()
         try {
-            val encryptedPassword = withContext(Dispatchers.Default) {
-                cryptoManager.encrypt(updatedPasswordData.newPassword, masterKey)
-            }
-            val encryptedEmail = withContext(Dispatchers.Default) {
-                cryptoManager.encrypt(updatedPasswordData.newEmail, masterKey)
+            val (encryptedPassword, encryptedEmail) = withContext(Dispatchers.Default) {
+                val plainPassword = cryptoManager.encrypt(
+                    updatedPasswordData.newPassword,
+                    masterKey
+                )
+                val email = cryptoManager.encrypt(updatedPasswordData.newEmail, masterKey)
+                Pair(plainPassword, email)
             }
             val passwordToUpdate = dao.getPasswordById(updatedPasswordData.id)
             dao.updatePassword(

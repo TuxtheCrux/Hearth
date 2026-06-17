@@ -26,7 +26,7 @@ class AuthViewModel @Inject constructor(
     fun createAcc(masterKey: String, username: String) =
         viewModelScope.launch(Dispatchers.Default) {
             val masterKeyCharArr = masterKey.toCharArray()
-            createHashUseCase.invoke(masterKey = masterKeyCharArr, username = username)
+            createHashUseCase.invoke(masterKey = masterKeyCharArr.copyOf(), username = username)
             sessionManager.unlock(masterKeyCharArr)
             _loginState.value = AuthState.AccountCreated
         }
@@ -35,7 +35,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             val masterKeyCharArr = masterKey.toCharArray()
             if (!verifyCredentialsUseCase.invoke(
-                    masterKey = masterKeyCharArr,
+                    masterKey = masterKeyCharArr.copyOf(),
                     username = username
                 )
             ) {

@@ -2,13 +2,14 @@ package com.hsharz.redline.feature.passwords.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hsharz.redline.feature.passwords.domain.PasswordStrengthCalcUseCase.PasswordStrengthType
 import com.hsharz.redline.core.security.SessionManager
 import com.hsharz.redline.feature.passwords.domain.DeletePasswordUseCase
 import com.hsharz.redline.feature.passwords.domain.GetPasswordDetailUseCase
 import com.hsharz.redline.feature.passwords.domain.PasswordDetail
 import com.hsharz.redline.feature.passwords.domain.GetPasswordListUseCase
 import com.hsharz.redline.feature.passwords.domain.InsertPasswordUseCase
+import com.hsharz.redline.feature.passwords.domain.PasswordStrengthCalcUseCase
 import com.hsharz.redline.feature.passwords.domain.UpdatePasswordUseCase
 import com.hsharz.redline.feature.passwords.domain.UpdatedPasswordData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,12 +27,15 @@ class PasswordViewModel @Inject constructor(
     private val insertPasswordUseCase: InsertPasswordUseCase,
     private val updatePasswordUseCase: UpdatePasswordUseCase,
     private val deletePasswordUseCase: DeletePasswordUseCase,
+    private val passwordStrengthCalcUseCase: PasswordStrengthCalcUseCase,
     private val sessionManager: SessionManager
 ) :
     ViewModel() {
     val passwords = getPasswordListUseCase.invoke()
     val passwordDetail = MutableStateFlow<PasswordDetail?>(null)
     private val sessionScope = CoroutineScope(Dispatchers.Main)
+
+    val passwordStrength = MutableStateFlow<PasswordStrengthType>(PasswordStrengthType.WEAK)
 
     init {
         sessionExpired()
@@ -57,10 +61,14 @@ class PasswordViewModel @Inject constructor(
         }
 
     fun deletePassword(passwordId: Long) = viewModelScope.launch {
-        deletePasswordUseCase.deletePassword(passwordId)
+        deletePasswordUseCase.deletePassword(passwordId = passwordId)
     }
 
     fun loadPasswordDetail(id: Long) = viewModelScope.launch {
-        passwordDetail.value = getPasswordDetailUseCase.invoke(id)
+        passwordDetail.value = getPasswordDetailUseCase.invoke(id = id)
+    }
+
+    fun checkPasswordStrength(password: String) {
+        passwordStrength.value = passwordStrengthCalcUseCase.invoke(password = password)
     }
 }

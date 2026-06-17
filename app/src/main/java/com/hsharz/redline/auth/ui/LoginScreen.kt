@@ -1,6 +1,9 @@
 package com.hsharz.redline.auth.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -11,7 +14,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsharz.redline.auth.domain.AuthState
 import com.hsharz.redline.core.navigation.Routes
@@ -27,7 +33,11 @@ fun LoginScreen(
 
     var emailError by rememberSaveable { mutableStateOf(false) }
     var passwordError by rememberSaveable { mutableStateOf(false) }
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         OutlinedTextField(
             value = email,
             onValueChange = {
@@ -56,6 +66,7 @@ fun LoginScreen(
                     passwordError = password.isEmpty()
                 }
             },
+            modifier = Modifier.padding(top = 16.dp),
             content = {
                 Text(text = "Login")
             }

@@ -2,6 +2,7 @@ package com.hsharz.redline.feature.passwords.ui
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -15,19 +16,22 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hsharz.redline.feature.passwords.domain.PasswordDetail
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 //TODO
 // 1. Add edit and delete buttons/function
-// 2. Add password strength indicator +
-// 3. hide password at first and add show password button in password detail sheet
+// 2. Add password strength indicator
 /**
  * Sheet for displaying details of a single password
  * @param selectedPassword
@@ -54,16 +58,24 @@ fun PasswordDetailSheet(
             selectedPassword.lastModified
         )
     }
-    var hidePasswordState = rememberSaveable { mutableStateOf(true) }
+    val hidePasswordState = rememberSaveable { mutableStateOf(true) }
     val displayPassword =
         if (hidePasswordState.value) "•".repeat(selectedPassword.password.length)
         else selectedPassword.password
+
+    val passwordDetail by viewModel.passwordDetail.collectAsStateWithLifecycle()
+    LaunchedEffect(passwordDetail) {
+        passwordDetail?.let { viewModel.checkPasswordStrength(it.password) }
+    }
+    val passwordStrength by viewModel.passwordStrength.collectAsStateWithLifecycle()
+
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = bottomSheetState
     ) {
         Column {
             Button(
+                modifier = Modifier.padding(horizontal = 10.dp),
                 onClick = {
                     openEditSheet = true
                 },
@@ -76,6 +88,7 @@ fun PasswordDetailSheet(
                 overlineContent = { Text(text = "Username") },
                 headlineContent = { Text(text = selectedPassword.email) }
             )
+            PasswordStrengthIndicator(passwordStrength = passwordStrength)
             ListItem(
                 overlineContent = { Text(text = "Password") },
                 headlineContent = { Text(text = displayPassword) },

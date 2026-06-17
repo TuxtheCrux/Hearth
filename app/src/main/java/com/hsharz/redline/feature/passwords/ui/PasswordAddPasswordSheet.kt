@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 //TODO Passkey logik
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +33,7 @@ fun PasswordAddPasswordSheet(
     var emailError by rememberSaveable { mutableStateOf(false) }
     var passwordError by rememberSaveable { mutableStateOf(false) }
     var websiteOrAppError by rememberSaveable { mutableStateOf(false) }
+    val passwordStrength by viewModel.passwordStrength.collectAsStateWithLifecycle()
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -71,10 +73,12 @@ fun PasswordAddPasswordSheet(
                 label = { Text(text = "Email") },
                 isError = emailError,
             )
+            PasswordStrengthIndicator(passwordStrength = passwordStrength)
             OutlinedTextField(
                 value = newPassword,
                 onValueChange = {
                     newPassword = it
+                    viewModel.checkPasswordStrength(password = it)
                     passwordError = false
                 },
                 label = { Text(text = "New Password") },
