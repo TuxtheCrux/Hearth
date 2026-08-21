@@ -32,8 +32,9 @@ class GetPasswordDetailUseCase @Inject constructor(
                 id,
                 decryptedPassword,
                 decryptedEmail,
-                encryptedPasswordEntity.websiteOrApp,
-                encryptedPasswordEntity.lastModified
+                webOrApp = encryptedPasswordEntity.websiteOrApp,
+                entryType = encryptedPasswordEntity.entryType,
+                lastModified = encryptedPasswordEntity.lastModified
             )
         } finally {
             masterKey.fill('\u0000')

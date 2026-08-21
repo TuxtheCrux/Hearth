@@ -3,6 +3,7 @@ package com.hsharz.redline.feature.passwords.domain
 import com.hsharz.redline.R
 import javax.inject.Inject
 
+// Todo : Rework StrengthChecker completely
 class PasswordStrengthCalcUseCase @Inject constructor() {
     enum class PasswordStrengthType(val color: String, val label: String, val iconRes: Int) {
         WEAK(color = "#E63946", label = "Weak password", iconRes = R.drawable.ic_strength_weak),

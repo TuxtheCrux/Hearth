@@ -66,7 +66,7 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
     var openAddPasswordSheet by rememberSaveable { mutableStateOf(false) }
 
     val sortedPasswords = remember(passwords, query) {
-        passwords.filter { it.webOrApp.contains(query) }.sortedWith(
+        passwords.filter { it.webOrApp.contains(query, ignoreCase = true) }.sortedWith(
             compareBy(String.CASE_INSENSITIVE_ORDER)
             { it.webOrApp })
     }
@@ -205,7 +205,6 @@ fun PasswordScreen(viewModel: PasswordViewModel, modifier: Modifier = Modifier) 
  * @param passwordListItem
  * @param onCardClick
  * @param modifier
- * @author Tux_the_Crux
  */
 @Composable
 fun PasswordCard(

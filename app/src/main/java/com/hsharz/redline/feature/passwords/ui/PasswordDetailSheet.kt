@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsharz.redline.feature.passwords.data.EntryType
 import com.hsharz.redline.feature.passwords.domain.PasswordDetail
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -103,7 +104,11 @@ fun PasswordDetailSheet(
                 }
             )
             ListItem(
-                overlineContent = { Text(text = "Website or App") },
+                overlineContent = {
+                    if (selectedPassword.entryType == EntryType.WEBSITE) {
+                        Text(text = "Website")
+                    } else Text(text = "App")
+                },
                 headlineContent = {
                     Text(text = selectedPassword.webOrApp)
                 }
