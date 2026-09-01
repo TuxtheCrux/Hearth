@@ -8,7 +8,7 @@ Eine sicherheitsorientierte Android-App für Passwortverwaltung mit integrierter
 
 - **Passwortverwaltung** – Zugangsdaten speichern, suchen und verwalten; Swipe-to-Delete, alphabetische Sortierung
 - **Zweischichtige Verschlüsselung** – SQLCipher verschlüsselt die gesamte Datenbank; einzelne Passwortfelder werden zusätzlich mit PBKDF2 + AES-GCM gesichert
-- **Biometrische Authentifizierung** – Entsperrung per Fingerabdruck oder Gerätesperre via Android BiometricPrompt
+- **Biometrische Authentifizierung** – Entsperrung per Fingerabdruck oder Gerätesperre via Android BiometricPrompt -- Not yet implemented
 - **Session-Management** – Master-Key liegt nur im RAM und wird nach Inaktivität automatisch gelöscht
 - **Scanner** – *(in Entwicklung)*
 - **Cipher-Tools** – *(in Entwicklung)*
@@ -27,9 +27,9 @@ core/
 
 feature/
 ├── passwords/
-│   ├── data/       # PasswordEntity, DAO, Repository, TypeConverters
-│   ├── domain/     # UseCases, PasswordListItem, PasswordDetail
-│   └── ui/         # PasswordScreen, Composables
+│   ├── data/       # PasswordEntity, DAO, Repository,...
+│   ├── domain/     # UseCases, PasswordListItem, PasswordDetail,...
+│   └── ui/         # PasswordScreen, Composables,...
 ├── scanner/        # (in Entwicklung)
 └── cipher/         # (in Entwicklung)
 ```
