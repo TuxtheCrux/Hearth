@@ -1,4 +1,4 @@
-# Redline
+# Ember
 
 Eine sicherheitsorientierte Android-App für Passwortverwaltung mit integrierter Verschlüsselung und Scanner-Funktionalität. Entwickelt als Hochschulprojekt mit Fokus auf praxisnaher Security-Architektur.
 
