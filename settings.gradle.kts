@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Redline"
+rootProject.name = "Gacrux"
 include(":app")
  

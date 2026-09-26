@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.hsharz.redline"
+    namespace = "com.scrux.gacrux"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.hsharz.redline"
+        applicationId = "com.scrux.gacrux"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
